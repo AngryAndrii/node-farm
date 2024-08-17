@@ -1,6 +1,6 @@
-const fs = require('fs');
-const http = require('http');
-const path = require('path');
+const fs = require("fs");
+const http = require("http");
+const path = require("path");
 const url = require("url");
 
 ////////////////////////////////
@@ -23,24 +23,33 @@ const url = require("url");
 //         console.log(data3);
 //         fs.writeFile('./txt/final.txt', `${data2}\n${data3}`, "utf-8", err => {
 //             console.log('your file has been eritten')
-//         }) 
+//         })
 // })})})
 
 /////////////////////////////////
 // SERVER
 
-const server = http.createServer((req, res) => {
-   const pathName = req.url;
-   if (pathName === '/' || pathName === '/overview') {
-    res.end('it is overview page');
-   } else if (pathName === '/products') {
-    res.end('it is product page');
-   } else {
-    res.writeHead(404, {'Content-type': 'text/html', 'my-own-header': 'hello world'});
-    res.end('<h1>page not found</h1>');
-   }
-})
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const dataObject = JSON.parse(data);
 
-server.listen(8000, '127.0.0.1', () => {
-    console.log('listening to request on port 8000')
-})
+const server = http.createServer((req, res) => {
+  const pathName = req.url;
+  if (pathName === "/" || pathName === "/overview") {
+    res.end("it is overview page");
+  } else if (pathName === "/products") {
+    res.end("it is product page");
+  } else if (pathName === "/api") {
+    res.writeHead(200, { "Content-type": "application/json" });
+    res.end(data);
+  } else {
+    res.writeHead(404, {
+      "Content-type": "text/html",
+      "my-own-header": "hello world",
+    });
+    res.end("<h1>page not found</h1>");
+  }
+});
+
+server.listen(8000, "127.0.0.1", () => {
+  console.log("listening to request on port 8000");
+});
