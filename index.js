@@ -61,18 +61,21 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObject = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
+  const { query, pathname } = url.parse(req.url, true);
 
-  if (pathName === "/" || pathName === "/overview") {
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(200, { "Content-type": "text/html" });
     const cardHTML = dataObject
       .map((el) => replaseTamplate(tempCard, el))
       .join("");
     const output = tempOverview.replace("{%PRODUCTS_CARDS%}", cardHTML);
     res.end(output);
-  } else if (pathName === "/products") {
-    res.end("it is product page");
-  } else if (pathName === "/api") {
+  } else if (pathname === "/product") {
+    const product = dataObject[query.id];
+    res.writeHead(200, { "Content-type": "text/html" });
+    const output = replaseTamplate(tempProduct, product);
+    res.end(output);
+  } else if (pathname === "/api") {
     res.writeHead(200, { "Content-type": "application/json" });
     res.end(data);
   } else {
